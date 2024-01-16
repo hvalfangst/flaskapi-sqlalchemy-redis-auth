@@ -1,0 +1,10 @@
+class UserMessages:
+    FIELD_REQUIRED = "Fields name, email, password and access are required"
+    USER_EXISTS = "User with email {email} already exists."
+    SUCCESSFUL_CREATION = "Successfully created user."
+    ERROR_OCCURRED = "Error occurred: {error}"
+    USER_NOT_FOUND = "User with key {key} not found."
+    USER_DELETED = "User has been deleted."
+    SERVER_ERROR = "Internal server error."
+    MISSING_CREDENTIALS = "Email and password are required."
+    USER_UNAUTHORIZED = "The user is unauthorized"
