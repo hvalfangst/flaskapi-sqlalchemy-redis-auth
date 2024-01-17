@@ -1,0 +1,379 @@
+{
+	"info": {
+		"_postman_id": "3af663e9-5c3d-4854-9f41-4fc3122dd4c7",
+		"name": "Python Flask Banking API with Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29899311"
+	},
+	"item": [
+		{
+			"name": "Create user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"John\",\r\n  \"last_name\": \"Doe\",\r\n  \"phone_number\": \"123456789\",\r\n  \"address\": \"123 Main St\",\r\n  \"email\": \"john.doe@example.com\",\r\n  \"password\": \"securepassword\",\r\n  \"ssn\": \"12345678901\",\r\n  \"access\": \"WRITE\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/users",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update user",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"phone_number\": \"6565656565\",\r\n  \"address\": \"123 Main St\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/users/john.doe@example.com",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users",
+						"john.doe@example.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:1911/users/john.doe@example.com",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users",
+						"john.doe@example.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:1911/users",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"partition_key\": \"Heroes\",\r\n    \"row_key\": \"0\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/users/john.doe@example.com",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users",
+						"john.doe@example.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"securepassword\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create account",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiYWNjZXNzIjoiV1JJVEUiLCJleHAiOjE3MDU2Njg1OTB9.WwUneaGdNnZkn5NK1d8ifIxAAv89OMDcCQ-A_hN2OW0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_id\": 11,\r\n    \"account_number\": \"123456789231\",\r\n    \"balance\": 4.0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update account",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"balance\": 1221.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts/123456789234",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts",
+						"123456789234"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get account by number",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_email\": \"john.doe@example.com\",\r\n    \"account_number\": 32132113,\r\n    \"balance\": 1221\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts/123456789234",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts",
+						"123456789234"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List accounts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiYWNjZXNzIjoiV1JJVEUiLCJleHAiOjE3MDU2NjkxOTB9.rNLz1cXtob5wL2Q2oRtpVsi7ju_6RtD4Lgw_gXIbUGo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:1911/accounts",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List accounts by email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_email\": \"john.doe@example.com\",\r\n    \"account_number\": 32132113,\r\n    \"balance\": 1221\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts/john.doe@example.com",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts",
+						"john.doe@example.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete account by email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwiYWNjZXNzIjoiV1JJVEUiLCJleHAiOjE3MDU2NjkxOTB9.rNLz1cXtob5wL2Q2oRtpVsi7ju_6RtD4Lgw_gXIbUGo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_email\": \"john.doe@example.com\",\r\n    \"account_number\": 32132113,\r\n    \"balance\": 1221\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts/john.doe@example.com",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts",
+						"john.doe@example.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete account by id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user_email\": \"john.doe@example.com\",\r\n    \"account_number\": 32132113,\r\n    \"balance\": 1221\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:1911/accounts/11",
+					"host": [
+						"localhost"
+					],
+					"port": "1911",
+					"path": [
+						"accounts",
+						"11"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,4 @@
+Flask==3.0.0
+gunicorn==21.2.0
+datetime==5.4
+pydantic[email]==2.5.3

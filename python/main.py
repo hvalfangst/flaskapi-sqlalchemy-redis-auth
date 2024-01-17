@@ -1,10 +1,14 @@
+from accounts.accounts_bp import accounts_bp
+from users.users_bp import users_bp
 from flask import Flask
-from python.route.users.module import register_user_routes
 
 flask_api = Flask(__name__)
 
-# Register routes for context 'users'
-register_user_routes(flask_api)
+# Register blueprint for context 'users'
+flask_api.register_blueprint(users_bp)
+
+# Register blueprint for context 'accounts'
+flask_api.register_blueprint(accounts_bp)
 
 # Serve API at port 1911
 if __name__ == "__main__":
