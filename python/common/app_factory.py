@@ -1,13 +1,13 @@
 from flask import Flask
 
-from configuration.app import Config
+from configuration.manager import SQLAlchemyConfig
 from .db import db
 
 
 def create(blueprints=None):
     """Construct the core application."""
     app = Flask("HVALFANGST", instance_relative_config=False)
-    app.config.from_object(Config)
+    app.config.from_object(SQLAlchemyConfig)
 
     # Initialize Database Plugin
     db.init_app(app)
