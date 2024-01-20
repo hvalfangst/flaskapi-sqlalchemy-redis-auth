@@ -19,6 +19,14 @@ class Account(db.Model):
     # Relationship with the User table
     user = relationship('User', backref='accounts')
 
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "account_id": self.account_id,
+            "user_id": self.user_id,
+            "account_number": self.account_number,
+            "balance": self.balance
+        }
+
 
 class CreateAccountRequest(BaseModel):
     user_id: int
@@ -28,19 +36,3 @@ class CreateAccountRequest(BaseModel):
 
 class UpdateAccountRequest(BaseModel):
     balance: Optional[Decimal] = Field(ge=0.00, precision=2)
-
-
-class Account:
-    def __init__(self, account_id, user_id, account_number, balance):
-        self.account_id = account_id
-        self.user_id = user_id
-        self.account_number = account_number
-        self.balance = balance
-
-    def to_dict(self) -> Dict[str, str]:
-        return {
-            "account_id": self.account_id,
-            "user_id": self.user_id,
-            "account_number": self.account_number,
-            "balance": self.balance
-        }

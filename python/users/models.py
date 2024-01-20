@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from common.db import db
 
 
-class UsersTable(db.Model):
+class User(db.Model):
     __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -19,6 +19,19 @@ class UsersTable(db.Model):
     access = Column(String(6), nullable=False)
 
     __table_args__ = (UniqueConstraint('email'),)
+
+    def to_dict(self) -> Dict[str, str]:
+        return {
+            "user_id": self.user_id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "phone_number": self.phone_number,
+            "address": self.address,
+            "email": self.email,
+            "password": self.password,
+            "ssn": self.ssn,
+            "access": self.access
+        }
 
 
 class CreateUserRequest(BaseModel):
@@ -35,32 +48,6 @@ class CreateUserRequest(BaseModel):
 class UpdateUserRequest(BaseModel):
     phone_number: Optional[str]
     address: Optional[str]
-
-
-class User:
-    def __init__(self, user_id, first_name, last_name, phone_number, address, email, password, ssn, access):
-        self.user_id = user_id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.phone_number = phone_number
-        self.address = address
-        self.email = email
-        self.password = password
-        self.ssn = ssn
-        self.access = access
-
-    def to_dict(self) -> Dict[str, str]:
-        return {
-            "user_id": self.user_id,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "phone_number": self.phone_number,
-            "address": self.address,
-            "email": self.email,
-            "password": self.password,
-            "ssn": self.ssn,
-            "access": self.access
-        }
 
 
 class Claims:
