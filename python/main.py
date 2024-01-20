@@ -1,14 +1,12 @@
-from accounts.accounts_bp import accounts_bp
-from users.users_bp import users_bp
 from flask import Flask
 
-flask_api = Flask(__name__)
+from accounts.accounts_bp import accounts_bp
+from common.app_factory import create
+from users.users_bp import users_bp
 
-# Register blueprint for context 'users'
-flask_api.register_blueprint(users_bp)
 
-# Register blueprint for context 'accounts'
-flask_api.register_blueprint(accounts_bp)
+blueprints = [users_bp, accounts_bp]
+flask_api = create(blueprints)
 
 # Serve API at port 1911
 if __name__ == "__main__":

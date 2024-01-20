@@ -4,8 +4,8 @@ import jwt
 from flask import jsonify, request
 import logging
 
-from .cache import BlackListCache
-from .configs import JwtConfig
+from security.blacklist_cache import BlackListCache
+from configuration.models import JwtConfig
 from .models import AccessType, AccessHierarchy
 
 # Set up logging

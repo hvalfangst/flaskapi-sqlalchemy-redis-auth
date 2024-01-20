@@ -1,6 +1,24 @@
-from common.models import AccessType
+from sqlalchemy import UniqueConstraint, Column, String, Integer
+from security.models import AccessType
 from typing import Dict, Optional
 from pydantic import BaseModel, EmailStr
+from common.db import db
+
+
+class UsersTable(db.Model):
+    __tablename__ = 'users'
+
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    phone_number = Column(String(15))
+    address = Column(String(255))
+    email = Column(String(255), unique=True, nullable=False)
+    password = Column(String(200), nullable=False)
+    ssn = Column(String(11), unique=True, nullable=False)
+    access = Column(String(6), nullable=False)
+
+    __table_args__ = (UniqueConstraint('email'),)
 
 
 class CreateUserRequest(BaseModel):

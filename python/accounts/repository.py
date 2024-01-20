@@ -1,3 +1,7 @@
+from typing import List
+
+from sqlalchemy.orm import sessionmaker
+
 from .models import CreateAccountRequest, UpdateAccountRequest, Account
 from .queries import (
     CREATE_ACCOUNT_QUERY,
@@ -6,51 +10,77 @@ from .queries import (
     GET_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY,
     DELETE_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY,
     DELETE_ACCOUNT_BY_ACCOUNT_ID_QUERY)
-from common.configs import DatabaseConfig
-from typing import List
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
 
 class AccountsRepository:
-    def __init__(self, config: DatabaseConfig) -> None:
-        self.engine = create_engine(config.database_url)
+    def __init__(self, database) -> None:
+        self.database = database
+        print(f"Initialized AccountsRepository with database: {self.database}")
 
     def create(self, request: CreateAccountRequest):
-        with Session(bind=self.engine) as db:
-            db.execute(
-                CREATE_ACCOUNT_QUERY,
-                {"user_id": request.user_id, "account_number": request.account_number, "balance": request.balance}
-            )
-            db.commit()
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                session.execute(
+                    CREATE_ACCOUNT_QUERY,
+                    {"user_id": request.user_id, "account_number": request.account_number, "balance": request.balance}
+                )
+                session.commit()
+        except Exception as e:
+            print(f"Error occurred during create: {e}")
+            raise e
 
     def update(self, account_number: str, request: UpdateAccountRequest):
-        with Session(bind=self.engine) as db:
-            db.execute(
-                UPDATE_ACCOUNT_QUERY,
-                {"balance": request.balance, "account_number": account_number}
-            )
-            db.commit()
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                session.execute(
+                    UPDATE_ACCOUNT_QUERY,
+                    {"balance": request.balance, "account_number": account_number}
+                )
+                session.commit()
+        except Exception as e:
+            print(f"Error occurred during update: {e}")
+            raise e
 
     def list(self) -> List[Account]:
-        with Session(bind=self.engine) as db:
-            result = db.execute(LIST_ACCOUNTS_QUERY)
-            rows = result.fetchall()
-        accounts = [Account(row.account_id, row.account_number, row.user_id, row.balance) for row in rows]
-        return accounts
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                print(f"Initialized AccountsRepository with session: {session}")
+                result = session.execute(LIST_ACCOUNTS_QUERY)
+                rows = result.fetchall()
+                accounts = [Account(*row) for row in rows]
+                return accounts
+        except Exception as e:
+            print(f"Error occurred during list: {e}")
+            raise e
 
     def get_by_number(self, account_number: str):
-        with Session(bind=self.engine) as db:
-            result = db.execute(GET_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY, {"account_number": account_number})
-            row = result.fetchone()
-        return Account(row.account_number, row.user_email, row.account_number, row.balance)
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                result = session.execute(GET_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY, {"account_number": account_number})
+                row = result.fetchone()
+
+                if row is None:
+                    return None
+
+                return Account(*row)
+        except Exception as e:
+            print(f"Error occurred during get_by_number: {e}")
+            raise e
 
     def delete_by_id(self, account_id: int):
-        with Session(bind=self.engine) as db:
-            db.execute(DELETE_ACCOUNT_BY_ACCOUNT_ID_QUERY, {"account_id": account_id})
-            db.commit()
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                session.execute(DELETE_ACCOUNT_BY_ACCOUNT_ID_QUERY, {"account_id": account_id})
+                session.commit()
+        except Exception as e:
+            print(f"Error occurred during delete_by_id: {e}")
+            raise e
 
     def delete_by_number(self, account_number: str):
-        with Session(bind=self.engine) as db:
-            db.execute(DELETE_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY, {"account_number": account_number})
-            db.commit()
+        try:
+            with sessionmaker(bind=self.database.engine)() as session:
+                session.execute(DELETE_ACCOUNT_BY_ACCOUNT_NUMBER_QUERY, {"account_number": account_number})
+                session.commit()
+        except Exception as e:
+            print(f"Error occurred during delete_by_number: {e}")
+            raise e

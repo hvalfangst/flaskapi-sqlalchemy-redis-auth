@@ -1,15 +1,19 @@
 import logging
+import sys
+import traceback
 
+import bcrypt
+from flask import request, jsonify, Response
+from pydantic import EmailStr
+
+from configuration.manager import jwt_config
+from common.db import db
 from .messages import UserMessages
 from .models import CreateUserRequest, UpdateUserRequest
 from .repository import UsersRepository
-from .security import authenticate, generate_jwt_token
-from common import db_config, jwt_config
-import sys
-import traceback
-import bcrypt
-from flask import request, jsonify
-from pydantic import EmailStr
+from security.jwt import generate_jwt_token
+from security.authentication import authenticate
+
 
 # Configure the logging module
 logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
@@ -17,11 +21,12 @@ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 # Create a logger for this module
 logger = logging.getLogger(__name__)
 
+
 # Initialize the UsersRepository
-db = UsersRepository(config=db_config)
+repo = UsersRepository(database=db)
 
 
-def create_user_handler():
+def create_user_handler() -> tuple[Response, int]:
     """
     Handle the creation of a user.
 
@@ -34,14 +39,14 @@ def create_user_handler():
         req = CreateUserRequest(**request.get_json())
         hashed_password = bcrypt.hashpw(req.password.encode('utf-8'), bcrypt.gensalt())
         req.password = hashed_password.decode('utf-8')
-        db.create(request=req)
+        repo.create(request=req)
         return jsonify({"message": "User created"}), 201
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Unauthorized"}), 401
 
 
-def update_user_handler(email: EmailStr):
+def update_user_handler(email: EmailStr) -> tuple[Response, int]:
     """
   Handle the update of a user.
 
@@ -52,21 +57,23 @@ def update_user_handler(email: EmailStr):
 
   Returns:
       tuple: Tuple containing the JSON response and HTTP status code.
+      :param email:
+      :param db:
   """
     try:
-        user = db.get_by_email(email)
+        user = repo.get_by_email(email)
         if user is None:
             return jsonify({"error": f"No user found with email: {email}"}), 404
 
         req = UpdateUserRequest(**request.get_json())
-        db.update(email=email, request=req)
-        return jsonify({"message": "Successfully updated account."})
+        repo.update(email=email, request=req)
+        return jsonify({"message": "Successfully updated account."}), 200
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Unauthorized"}), 401
 
 
-def list_users_handler():
+def list_users_handler() -> tuple[Response, int]:
     """
  Handle the listing of users.
 
@@ -76,7 +83,7 @@ def list_users_handler():
      tuple: Tuple containing the JSON response and HTTP status code.
  """
     try:
-        users = db.list()
+        users = repo.list()
 
         if not users:
             return jsonify({"error": f"No users present"}), 404
@@ -85,13 +92,13 @@ def list_users_handler():
             print(f"password: {user.password}")
 
         users_dict = [user.to_dict() for user in users]
-        return jsonify(users_dict)
+        return jsonify(users_dict), 200
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Unauthorized"}), 401
 
 
-def get_user_handler(email: EmailStr):
+def get_user_handler(email: EmailStr) -> tuple[Response, int]:
     """
    Handle the retrieval of a user.
 
@@ -102,22 +109,24 @@ def get_user_handler(email: EmailStr):
 
    Returns:
        tuple: Tuple containing the JSON response and HTTP status code.
+       :param email:
+       :param db:
    """
     try:
-        user = db.get_by_email(email)
+        user = repo.get_by_email(email)
 
         if user is None:
             return jsonify({"error": f"No user found with email: {email}"}), 404
 
         user_data = user.to_dict()
-        return jsonify(user_data)
+        return jsonify(user_data), 200
 
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Unauthorized"}), 401
 
 
-def delete_user_handler(email: EmailStr):
+def delete_user_handler(email: EmailStr) -> tuple[Response, int]:
     """
    Handle the deletion of a user.
 
@@ -128,21 +137,23 @@ def delete_user_handler(email: EmailStr):
 
    Returns:
        tuple: Tuple containing the JSON response and HTTP status code.
+       :param email:
+       :param db:
    """
     try:
-        user = db.get_by_email(email)
+        user = repo.get_by_email(email)
 
         if user is None:
             return jsonify({"error": f"No user found with email: {email}"}), 404
 
-        db.delete_by_email(email)
-        return jsonify({"message": f"User associated with email {email} has been deleted."})
+        repo.delete_by_email(email)
+        return jsonify({"message": f"User associated with email {email} has been deleted."}), 200
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
         return jsonify({"error": "Unauthorized"}), 401
 
 
-def login_user_handler():
+def login_user_handler() -> tuple[Response, int]:
     """
    Handle user login.
 
@@ -160,11 +171,13 @@ def login_user_handler():
         if not (email and password):
             return jsonify({"error": UserMessages.MISSING_CREDENTIALS}), 400
 
-        authenticated, access = authenticate(db, email, password)
+        user = repo.get_by_email(email)
+
+        authenticated, access = authenticate(user, password)
 
         if authenticated:
             token = generate_jwt_token(config=jwt_config, email=email, access=access)
-            return jsonify({"token": token})
+            return jsonify({"token": token}), 200
         else:
             return jsonify({"error": UserMessages.USER_UNAUTHORIZED}), 401
     except Exception as e:

@@ -16,4 +16,4 @@ class RedisCacheConfig:
         self.port = port
         self.password = password
         self.key_prefix = key_prefix
-        self.expiry = expiration
+        self.expiration = expiration

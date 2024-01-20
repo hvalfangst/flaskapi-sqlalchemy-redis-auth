@@ -1,15 +1,17 @@
 import logging
+import sys
 import traceback
+from typing import List
 
+from flask import request, jsonify
+
+
+from common.db import db
+from configuration.manager import blacklist_cache, jwt_config
+from security.models import AccessType
+from security.authorization import authorize
 from .models import CreateAccountRequest, UpdateAccountRequest, Account
 from .repository import AccountsRepository
-from common import db_config, jwt_config, blacklist_cache
-from common.models import AccessType
-from common.security import authorize
-import sys
-from typing import List
-from flask import request, jsonify
-from pydantic import Field
 
 # Configure the logging module
 logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
@@ -18,7 +20,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 # Initialize the AccountsRepository
-db = AccountsRepository(config=db_config)
+repo = AccountsRepository(database=db)
 
 
 # Define the decorator for authorization
@@ -38,7 +40,7 @@ def create_account_handler():
     """
     try:
         req = CreateAccountRequest(**request.get_json())
-        db.create(request=req)
+        repo.create(request=req)
         return jsonify({"message": "Successfully created account."})
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
@@ -60,7 +62,7 @@ def update_account_handler(account_number: str):
     """
     try:
         req = UpdateAccountRequest(**request.get_json())
-        db.update(account_number=account_number, request=req)
+        repo.update(account_number=account_number, request=req)
         return jsonify({"message": "Successfully updated account."})
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
@@ -78,7 +80,7 @@ def list_accounts_handler():
         tuple: Tuple containing the JSON response and HTTP status code.
     """
     try:
-        accounts: List[Account] = db.list()
+        accounts: List[Account] = repo.list()
 
         if not accounts:
             return jsonify({"error": f"No accounts present"}), 404
@@ -104,7 +106,7 @@ def get_account_by_number_handler(account_number: str):
        tuple: Tuple containing the JSON response and HTTP status code.
    """
     try:
-        account: Account = db.get_by_number(account_number=account_number)
+        account: Account = repo.get_by_number(account_number=account_number)
 
         if account is None:
             return jsonify({"error": f"No account found with account_number: {account_number}"}), 404
@@ -129,7 +131,7 @@ def delete_account_by_id_handler(account_id: int):
         tuple: Tuple containing the JSON response and HTTP status code.
     """
     try:
-        db.delete_by_id(account_id)
+        repo.delete_by_id(account_id)
         return jsonify({"message": f"Successfully deleted account with id {account_id}."})
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")
@@ -150,7 +152,7 @@ def delete_account_by_number_handler(account_number: str):
         tuple: Tuple containing the JSON response and HTTP status code.
     """
     try:
-        db.delete_by_number(account_number)
+        repo.delete_by_number(account_number)
         return jsonify({"message": f"Successfully deleted account with number {account_number}."})
     except Exception as e:
         logger.error(f"Error occurred: {str(e)}\n{traceback.format_exc()}")

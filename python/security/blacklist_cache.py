@@ -1,4 +1,4 @@
-from .configs import RedisCacheConfig
+from configuration.models import RedisCacheConfig
 import redis
 
 from datetime import datetime, timedelta
@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 class BlackListCache:
     def __init__(self, config: RedisCacheConfig):
-        self.expiry = config.expiry
+        self.expiration = config.expiration
         self.redis_client = redis.StrictRedis(
             host=config.host,
             port=config.port,
@@ -20,7 +20,7 @@ class BlackListCache:
 
     def set(self, email: str):
         key = self._get_key(email)
-        self.redis_client.setex(key, timedelta(days=self.expiry).seconds, datetime.utcnow().second)
+        self.redis_client.setex(key, timedelta(days=self.expiration).seconds, datetime.utcnow().second)
 
     def get(self, email: str):
         key = self._get_key(email)
