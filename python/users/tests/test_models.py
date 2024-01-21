@@ -4,18 +4,22 @@ from pydantic import ValidationError
 from users.models import CreateUserRequest
 
 
+def create_user_request(email, password, access):
+    return CreateUserRequest(
+        first_name="Darth",
+        last_name="Vader",
+        phone_number="987654321",
+        address="Death Star, Sith Headquarters",
+        email=email,
+        password=password,
+        ssn="987654321",
+        access=access
+    )
+
+
 def test_create_user_request_fails_due_to_invalid_access_input():
     with pytest.raises(ValidationError) as exc_info:
-        CreateUserRequest(
-            first_name="John",
-            last_name="Doe",
-            phone_number="123456789",
-            address="123 Main St",
-            email="john.doe@example.com",
-            password="password123",
-            ssn="123456789",
-            access="INVALID"
-        )
+        create_user_request("darth.vader@sith.com", "darkside123", "INVALID")
 
     expected_error = {
         'type': 'enum',
@@ -32,19 +36,10 @@ def test_create_user_request_fails_due_to_invalid_access_input():
 
 def test_create_user_request_fails_due_to_invalid_email_input():
     with pytest.raises(ValidationError) as exc_info:
-        CreateUserRequest(
-            first_name="John",
-            last_name="Doe",
-            phone_number="123456789",
-            address="123 Main St",
-            email="INVALID",
-            password="password123",
-            ssn="123456789",
-            access="WRITE"
-        )
+        create_user_request("HANSOLOCANNOTSOLOME", "darkside123", "DELETE")
 
     expected_error = {
-        'input': 'INVALID',
+        'input': 'HANSOLOCANNOTSOLOME',
         'loc': ('email',),
         'msg': 'value is not a valid email address: The email address is not valid. '
                'It must have exactly one @-sign.',
@@ -58,16 +53,7 @@ def test_create_user_request_fails_due_to_invalid_email_input():
 
 def test_create_user_request_fails_due_to_invalid_password_input():
     with pytest.raises(ValidationError) as exc_info:
-        CreateUserRequest(
-            first_name="John",
-            last_name="Doe",
-            phone_number="123456789",
-            address="123 Main St",
-            email="john.doe@example.com",
-            password=666,
-            ssn="123456789",
-            access="WRITE"
-        )
+        create_user_request("darth.vader@sith.com", 666, "DELETE")
 
     expected_error = \
         {'input': 666,
