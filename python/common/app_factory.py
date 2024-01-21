@@ -4,10 +4,10 @@ from configuration.manager import SQLAlchemyConfig
 from .db import db
 
 
-def create(blueprints=None):
+def create(blueprints=None, config=None):
     """Construct the core application."""
     app = Flask("HVALFANGST", instance_relative_config=False)
-    app.config.from_object(SQLAlchemyConfig)
+    app.config.from_object(config)
 
     # Initialize Database Plugin
     db.init_app(app)
