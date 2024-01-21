@@ -1,10 +1,14 @@
 from flask import Flask
 
-from configuration.manager import SQLAlchemyConfig
+from accounts.accounts_bp import accounts_bp
+from users.users_bp import users_bp
 from .db import db
 
+# Define blueprints
+blueprints = [users_bp, accounts_bp]
 
-def create(blueprints=None, config=None):
+
+def create(config=None):
     """Construct the core application."""
     app = Flask("HVALFANGST", instance_relative_config=False)
     app.config.from_object(config)
@@ -13,9 +17,8 @@ def create(blueprints=None, config=None):
     db.init_app(app)
 
     # Register blueprints
-    if blueprints:
-        for blueprint in blueprints:
-            app.register_blueprint(blueprint)
+    for blueprint in blueprints:
+        app.register_blueprint(blueprint)
 
     # Migrate database based on registered
     with app.app_context():

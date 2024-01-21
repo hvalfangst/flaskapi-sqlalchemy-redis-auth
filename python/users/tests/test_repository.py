@@ -1,22 +1,18 @@
 import logging
 
-import logging
-
 import pytest
-from pydantic import ValidationError
 
-from users.users_bp import users_bp
 from common.app_factory import create
 from common.db import db as _db
-from users.tests.settings import TestConfig
 from users.models import CreateUserRequest, UpdateUserRequest
 from users.repository import UsersRepository
+from users.tests.settings import TestConfig
 
 
 @pytest.fixture
 def app():
     """Create application for the tests."""
-    _app = create([users_bp], TestConfig)
+    _app = create(TestConfig)
     _app.logger.setLevel(logging.CRITICAL)
     ctx = _app.test_request_context()
     ctx.push()
