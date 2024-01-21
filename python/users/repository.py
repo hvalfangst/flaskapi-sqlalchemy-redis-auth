@@ -73,6 +73,7 @@ class UsersRepository:
                     session.commit()
                 else:
                     print(f"User with email {email} not found.")
+                    return None
         except SQLAlchemyError as e:
             print(f"Error occurred during delete_by_email: {e}")
             raise e
